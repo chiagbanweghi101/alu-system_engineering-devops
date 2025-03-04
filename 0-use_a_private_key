@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+#connect to my school server
+ssh -i ~/.ssh/mp ubuntu@3.86.227.34
