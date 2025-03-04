@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
-#create an RSA keypair
-ssh-keygen -b 4096 -f school -t rsa -N betty
+#create an RSA keypair with passphrase and ensure the file exists after execution
+
+# Generate the RSA key pair
+ssh-keygen -b 4096 -f school -t rsa -N "betty" 
+
+# Check if the private key exists
+if [ -f "school" ]; then
+    echo "The RSA private key 'school' exists."
+else
+    echo "The RSA private key 'school' does not exist."
+fi
