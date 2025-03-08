@@ -1,21 +1,45 @@
 #!/usr/bin/env bash
-# Install and configure HAproxy on your lb-01 server.
-# Make sure that HAproxy can be managed via an init script
-sudo apt-get -y update
-sudo apt-get -y install haproxy
+# Update package list and install HAProxy
+sudo apt-get update -y
 
-echo \
-"
-frontend lb-frontend
-        bind *:80
-        mode http
-        default_backend lb-backend
-backend lb-backend
-        balance roundrobin
-        server web-01 3.86.227.34:80 check
-        server web-02 3.95.199.201:80 check
-" | sudo tee -a /etc/haproxy/haproxy.cfg
+sudo apt-get install -y haproxy
 
-echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
+# Backup HAProxy config file
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
+
+# Configure HAProxy with round-robin and server hostnames
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOL
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5s
+    timeout client 50s
+    timeout server 50s
+
+frontend http_front
+    bind *:80
+    default_backend web_servers
+
+backend web_servers
+    balance roundrobin
+    server 6419-web-01  3.86.227.34:80 check
+    server 6419-web-02 	3.95.199.201:80 check
+EOL
+
+# Restart HAProxy service using 'service' command
 sudo service haproxy restart
 
+# Enable HAProxy to start on boot
+sudo systemctl enable haproxy
