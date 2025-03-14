@@ -1,0 +1,25 @@
+s script fixes the Docker container to serve a page with "Hello Holberton"
+
+# 1. Run the Docker container
+docker run -p 8080:80 -d -it holbertonschool/265-0
+
+# 2. Check if the container is running
+docker ps
+
+# 3. Access the running container's shell
+docker exec -it <container_id> /bin/bash
+
+# 4. Check if Apache is installed and running
+apache2 -v
+
+# 5. If Apache isn't running, start it
+service apache2 start
+
+# 6. Navigate to the web directory and check index.html
+cd /var/www/html
+
+# 7. If index.html is missing or incorrect, create or edit it
+echo "<!DOCTYPE html><html><head><title>Hello Holberton</title></head><body>Hello Holberton</body></html>" > index.html
+
+# 8. Test the server from the host machine to see if it serves the correct page
+curl 0:8080
