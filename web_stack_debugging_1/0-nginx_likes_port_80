@@ -15,7 +15,7 @@ systemctl start nginx
 
 # Ensure Nginx is listening on port 80 on all IPv4 addresses
 echo "Configuring Nginx to listen on port 80 for all IP addresses..."
-sed -i 's/listen 127.0.0.1:80;/listen 0.0.0.0:80;/' /etc/nginx/sites-available/default
+ls -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Restart the Nginx service to apply changes
 echo "Restarting Nginx..."
