@@ -25,11 +25,14 @@ if [ $? -ne 0 ]; then
 fi
 
 # Ensure Nginx is running and responding with HTTP 200 status
-curl --silent --head http://localhost:80 | grep "HTTP/1.1 200 OK" > /dev/null
-if [ $? -ne 0 ]; then
-    echo "Nginx is not returning HTTP 200 status on port 80"
+http_status=$(curl --silent --write-out "%{http_code}" --output /dev/null http://localhost:80)
+
+# Check if the status is 200
+if [ "$http_status" -ne 200 ]; then
+    echo "Nginx is not returning HTTP 200 status on port 80, but returned $http_status"
     exit 1
 fi
 
-# Print success message
+# If everything is good
 echo "Nginx is running and listening on port 80 with HTTP 200 status."
+
