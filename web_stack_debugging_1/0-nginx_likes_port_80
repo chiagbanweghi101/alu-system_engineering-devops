@@ -4,27 +4,35 @@
 # Ensure nginx is installed
 if ! command -v nginx &> /dev/null
 then
+    echo "Nginx not found, installing it..."
     apt update
     apt install -y nginx
 fi
 
 # Start the Nginx service
+echo "Starting Nginx..."
 systemctl start nginx
 
 # Ensure Nginx is listening on port 80 on all IPv4 addresses
+echo "Configuring Nginx to listen on port 80 for all IP addresses..."
 sed -i 's/listen 127.0.0.1:80;/listen 0.0.0.0:80;/' /etc/nginx/sites-available/default
 
 # Restart the Nginx service to apply changes
+echo "Restarting Nginx..."
 systemctl restart nginx
 
 # Check if nginx is listening on port 80
+echo "Checking if Nginx is listening on port 80..."
 ss -tuln | grep ':80' > /dev/null
 if [ $? -ne 0 ]; then
-    echo "Nginx is not listening on port 80"
+    echo "Nginx is not listening on port 80."
     exit 1
+else
+    echo "Nginx is successfully listening on port 80."
 fi
 
-# Ensure Nginx is running and responding with HTTP 200 status
+# Ensure Nginx is responding with HTTP 200 status
+echo "Checking HTTP response status on port 80..."
 http_status=$(curl --silent --write-out "%{http_code}" --output /dev/null http://localhost:80)
 
 # Check if the status is 200
@@ -34,5 +42,5 @@ if [ "$http_status" -ne 200 ]; then
 fi
 
 # If everything is good
-echo "Nginx is running and listening on port 80 with HTTP 200 status."
+echo "Nginx is running, listening on port 80, and returned HTTP 200 status."
 
